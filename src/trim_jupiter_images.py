@@ -33,7 +33,7 @@ def output_npz():
 def output_avi():
     src = r"C:\Users\npayo\Desktop\SharpCap Captures\2025-02-04\Jupiter\21_04_55.avi"
     dst = Path("../data/jupiter_frames.avi")
-    max_frames = 900
+    max_frames = 8000
 
     cap = cv2.VideoCapture(src)
     if not cap.isOpened():
@@ -69,9 +69,6 @@ def get_frames(avi_path):
         ret, frame = cap.read()
         if not ret:
             break
-        # Frame will be (H, W) if VideoWriter wrote as grayscale,
-        # but sometimes OpenCV returns (H, W, 3) for old codecs.
-        # If so, convert to grayscale explicitly:
         if frame.ndim == 3 and frame.shape[2] == 3:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         frames_list.append(frame)
