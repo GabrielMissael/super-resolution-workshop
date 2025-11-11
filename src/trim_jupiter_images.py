@@ -36,7 +36,7 @@ def output_avi():
     max_frames = 8000
 
     ymin, ymax = 50, 350
-    xmin, xmax = 150, 450
+    xmin, xmax = 100, 400
 
     cap = cv2.VideoCapture(src)
     if not cap.isOpened():
