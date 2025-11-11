@@ -35,6 +35,9 @@ def output_avi():
     dst = Path("../data/jupiter_frames.avi")
     max_frames = 8000
 
+    ymin, ymax = 50, 350
+    xmin, xmax = 150, 450
+
     cap = cv2.VideoCapture(src)
     if not cap.isOpened():
         raise RuntimeError(f"Cannot open: {src}")
@@ -48,7 +51,9 @@ def output_avi():
         ok, frame = cap.read()
         if not ok:
             break
-        frames.append(frame[..., 0])
+        gray = frame[..., 0]
+        cropped = gray[ymin:ymax, xmin:xmax]
+        frames.append(cropped)
 
     frames = np.stack(frames, axis=0).astype(np.uint8)
     h, w = frames.shape[1:3]
