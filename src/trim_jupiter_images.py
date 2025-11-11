@@ -33,7 +33,7 @@ def output_npz():
 def output_avi():
     src = r"C:\Users\npayo\Desktop\SharpCap Captures\2025-02-04\Jupiter\21_04_55.avi"
     dst = Path("../data/jupiter_frames.avi")
-    max_frames = 9000
+    max_frames = 900
 
     cap = cv2.VideoCapture(src)
     if not cap.isOpened():
