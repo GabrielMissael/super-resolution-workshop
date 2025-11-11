@@ -1,6 +1,6 @@
 """Simple smoke tests for src/stacking.py
 
-Run: python scripts/test_stacking.py
+Run: python tests/test_stacking.py
 """
 import sys
 from pathlib import Path
