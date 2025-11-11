@@ -1,39 +1,28 @@
+from pathlib import Path
 import cv2
-import os
-import numpy
+import numpy as np
 
-input_path = r"C:\Users\npayo\Desktop\SharpCap Captures\2025-02-04\Jupiter\21_04_55.avi"
-out_path = r"../data/jupiter.avi"
+src = r"C:\Users\npayo\Desktop\SharpCap Captures\2025-02-04\Jupiter\21_04_55.avi"
+dst = Path("../data/jupiter_frames_uint8.npz")
+max_frames = 9000
 
-if not os.path.exists(input_path):
-    raise FileNotFoundError(f"Cannot find `{input_path}`")
-
-cap = cv2.VideoCapture(input_path)
+cap = cv2.VideoCapture(src)
 if not cap.isOpened():
-    raise RuntimeError(f"Cannot open `{input_path}`")
+    raise RuntimeError(f"Cannot open: {src}")
 
-fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
-w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-if w == 0 or h == 0:
-    raise RuntimeError("Captured frame size is zero")
+fps = cap.get(cv2.CAP_PROP_FPS)
+if not fps or not np.isfinite(fps) or fps < 1 or fps > 300:
+    fps = 30.0
 
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-writer = cv2.VideoWriter(out_path, fourcc, fps, (w, h))
-if not writer.isOpened():
-    cap.release()
-    raise RuntimeError("Failed to open VideoWriter. Try a different fourcc/extension")
-
-max_frames = 30 * 300
-count = 0
-while count < max_frames:
-    ret, frame = cap.read()
-    if not ret:
+frames = []
+while len(frames) < max_frames:
+    ok, frame = cap.read()
+    if not ok:
         break
-    writer.write(frame)
-    count += 1
+    frames.append(frame[..., 0])
 
 cap.release()
-writer.release()
 
-print(f"Wrote {count} frames to `{out_path}` (fps={fps}, size={w}x{h})")
+arr = np.stack(frames, axis=0).astype(np.uint8)  # shape: (T, H, W, 3)
+np.savez_compressed(dst, frames=arr, fps=fps)
+print(f"Saved {arr.shape} @ {fps:.2f} fps -> {dst}")
