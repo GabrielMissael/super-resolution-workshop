@@ -219,7 +219,7 @@ def stack_by_quality(frames: np.ndarray, scores: np.ndarray, method: str = "trim
     if method == 'sigma':
         out, _ = stack_sigma_clip(chosen, sigma=kwargs.get('sigma', 3.0), max_iters=kwargs.get('max_iters', 5), mask=None)
         return out
-    if method == '"trimmed"':
+    if method == 'trimmed':
         return stack_trimmed_mean(chosen, proportiontocut=kwargs.get('proportiontocut', 0.1), mask=None)
     if method == 'winsorized':
         return stack_winsorized_mean(chosen, limits=kwargs.get('limits', 0.1), mask=None)
