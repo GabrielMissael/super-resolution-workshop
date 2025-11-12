@@ -30,13 +30,20 @@ def output_npz():
     print(f"Saved {arr.shape} @ {fps:.2f} fps -> {dst}")
 
 
-def output_avi():
-    src = r"C:\Users\npayo\Desktop\SharpCap Captures\2025-02-04\Jupiter\21_04_55.avi"
-    dst = Path("../data/jupiter_frames.avi")
-    max_frames = 8000
+def output_avi(jupiter=True):
+    if jupiter:
+        src = r"C:\Users\npayo\Desktop\SharpCap Captures\2025-02-04\Jupiter\21_04_55.avi"
+        dst = Path("../data/jupiter_frames.avi")
+        max_frames = 8000
 
-    ymin, ymax = 50, 350
-    xmin, xmax = 125, 425
+        ymin, ymax = 50, 350
+        xmin, xmax = 125, 425
+    else:
+        src = r"C:\Users\npayo\Desktop\SharpCap Captures\2025-02-04\Mars\22_08_40.avi"
+        dst = Path("../data/mars_frames.avi")
+        max_frames = 40000
+        ymin, ymax = 170, 350
+        xmin, xmax = 260, 410
 
     cap = cv2.VideoCapture(src)
     if not cap.isOpened():
@@ -84,4 +91,4 @@ def get_frames(avi_path):
 
 
 if __name__ == '__main__':
-    output_avi()
+    output_avi(False)
