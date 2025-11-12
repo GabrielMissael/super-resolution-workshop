@@ -1,20 +1,3 @@
-"""
-Quality estimation and alignment for Jupiter frames.
-
-Usage (from project root):
-    python src\quality_and_align.py --input data\jupiter_frames_uint8.npz --out-dir data\aligned --max-frames 400
-
-What it does:
-- Loads frames and fps from the provided NPZ file.
-- Computes per-frame quality scores (Laplacian variance and Tenengrad energy).
-- Picks a reference frame (highest quality by default).
-- Detects alignment points (goodFeaturesToTrack) on the reference frame.
-- Tracks points in each frame using calcOpticalFlowPyrLK.
-- Estimates an affine transform per-frame using RANSAC and warps frames to the reference.
-- Saves aligned frames (npz), a CSV with quality scores and transform metadata, and reference alignment points.
-
-The script requires OpenCV (cv2) and numpy.
-"""
 from __future__ import annotations
 import argparse
 from pathlib import Path

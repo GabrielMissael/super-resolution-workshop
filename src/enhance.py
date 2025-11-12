@@ -1,7 +1,3 @@
-"""
-Image enhancement utilities: unsharp mask, Laplacian-pyramid sharpening (multi-scale), CLAHE contrast, and denoising.
-They avoid external dependencies (use only numpy and OpenCV) and include a small CLI to test/apply to a debayered NPZ.
-"""
 from __future__ import annotations
 from pathlib import Path
 import numpy as np

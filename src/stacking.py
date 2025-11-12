@@ -1,26 +1,3 @@
-"""
-Image stacking utilities for aligned, debayered and filtered planetary frames.
-
-Provides several stacking schemes commonly used in astrophotography:
-- simple average
-- median
-- sigma-clipped mean (iterative)
-- trimmed mean
-- winsorized mean
-- weighted mean (using quality scores)
-- choose_top_k_by_quality
-
-API contract (per function):
-- Input: frames as numpy array with shape (N, H, W) or (N, H, W, C). dtype can be uint8/uint16/float.
-- Optional masks: boolean array with shape (N, H, W) or (N, H, W, 1) marking invalid pixels (True=masked).
-- Optional scores: per-frame 1D array of length N used by weighting or selection.
-- Output: stacked image as float64 numpy array with same spatial and channel dims (H, W[, C]).
-
-Functions are defensive about small N and will fall back to median when trimming removes all values.
-
-No external dependencies other than numpy.
-"""
-
 from typing import Optional, Tuple
 import numpy as np
 
@@ -242,12 +219,8 @@ def stack_by_quality(frames: np.ndarray, scores: np.ndarray, method: str = "trim
     if method == 'sigma':
         out, _ = stack_sigma_clip(chosen, sigma=kwargs.get('sigma', 3.0), max_iters=kwargs.get('max_iters', 5), mask=None)
         return out
-    if method == 'trimmed':
+    if method == '"trimmed"':
         return stack_trimmed_mean(chosen, proportiontocut=kwargs.get('proportiontocut', 0.1), mask=None)
     if method == 'winsorized':
         return stack_winsorized_mean(chosen, limits=kwargs.get('limits', 0.1), mask=None)
     raise ValueError(f"unknown method {method}")
-
-
-# end of file
-

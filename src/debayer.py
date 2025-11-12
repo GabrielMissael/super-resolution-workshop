@@ -1,12 +1,3 @@
-"""
-Debayer (demosaic) utilities for RGGB Bayer frames.
-
-Usage (from project root):
-    python src\debayer.py --input data\jupiter_frames_uint8.npz --out-dir data\debayer_test --max-frames 10 --method BILINEAR
-
-The script supports methods: BILINEAR (default), VNG (if OpenCV supports it), EA (edge-aware if supported).
-Assumes input frames are single-channel uint8 Bayer mosaics in RGGB ordering (top-left is R).
-"""
 from __future__ import annotations
 from pathlib import Path
 import argparse
