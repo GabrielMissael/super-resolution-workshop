@@ -1,7 +1,3 @@
-"""Processing functions grouped under src.process
-
-Expose stacking, enhancement, and quality/alignment utilities.
-"""
 from __future__ import annotations
 
 from . import stacking as stacking  # type: ignore

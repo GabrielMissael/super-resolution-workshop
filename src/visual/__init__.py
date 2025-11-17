@@ -1,7 +1,3 @@
-"""Visualization subpackage
-
-Expose visualization utilities under src.visual
-"""
 from __future__ import annotations
 
 from . import visualize_results as visualize_results  # type: ignore

@@ -19,7 +19,7 @@ try:
 except Exception as e:  # pragma: no cover
     raise ImportError("astropy is required. Install with: pip install astropy") from e
 
-from src import fits_crop
+from . import fits_crop
 
 
 def compute_center_crop_coords(w_in: int, h_in: int, w_out: int, h_out: int) -> tuple[int, int, int, int]:

@@ -1,7 +1,3 @@
-"""I/O helpers subpackage
-
-Expose FITS utilities and visualization/io helpers.
-"""
 from __future__ import annotations
 
 from . import fits_crop as fits_crop  # type: ignore

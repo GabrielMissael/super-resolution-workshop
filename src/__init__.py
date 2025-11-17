@@ -1,5 +1,3 @@
-# Package initializer for src
-# Provide lazy subpackage imports to avoid circular import problems.
 
 __all__ = [
     # new subpackages
@@ -10,7 +8,6 @@ __all__ = [
 
 # Lazy import mechanism (PEP 562 style)
 import importlib
-import types
 
 _lazy_submodules = {
     'demosaic': 'src.demosaic',
