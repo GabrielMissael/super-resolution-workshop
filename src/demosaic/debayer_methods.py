@@ -101,7 +101,7 @@ def _replicate_pad(x: torch.Tensor) -> torch.Tensor:
 # VNG Demosaicing (Simplified)
 # ---------------------------------------------------------------------------
 
-def debayer_vng_torch(raw: np.ndarray, pattern: str = 'RGGB', device: str = 'cpu') -> np.ndarray:
+def debayer_vng_torch(raw: np.ndarray, pattern: str = 'RGGB', device: str = 'cpu', to_uint8=False) -> np.ndarray:
     """Simplified VNG demosaicing.
 
     Steps (approximation):
@@ -175,7 +175,7 @@ def debayer_vng_torch(raw: np.ndarray, pattern: str = 'RGGB', device: str = 'cpu
     G_full = _interp_channel(G, Gmask)
     B_full = _interp_channel(B, Bmask)
 
-    return _to_uint8_image(R_full, G_full, B_full)
+    return _to_uint8_image(R_full, G_full, B_full) if to_uint8 else torch.stack([R_full, G_full, B_full], dim=2)
 
 # ---------------------------------------------------------------------------
 # Edge-Aware Demosaicing (Simplified)
