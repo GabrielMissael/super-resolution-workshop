@@ -1,7 +1,7 @@
 
 __all__ = [
     # new subpackages
-    'demosaic', 'io', 'process', 'visual',
+    'demosaic', 'io', 'process', 'visual', 'diffusion_sampling',
     # legacy module names kept for compatibility
     'debayer', 'enhance', 'quality_and_align', 'visualize_results', 'stacking',
 ]
@@ -14,6 +14,7 @@ _lazy_submodules = {
     'io': 'src.io',
     'process': 'src.process',
     'visual': 'src.visual',
+    'diffusion_sampling': 'src.diffusion_sampling',
     # legacy modules mapping
     'debayer': 'src.demosaic.debayer',
     'debayer_methods': 'src.demosaic.debayer_methods',
