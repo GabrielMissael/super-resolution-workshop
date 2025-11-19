@@ -418,3 +418,83 @@ def warp_images_to_reference(images: List[np.ndarray],
         warped_list.append(warped)
     return warped_list
 
+def show_match_pair(frames, idx, ref_idx=0, composite=True):
+    def transform_points(M, pts):
+        if M is None or len(pts) == 0:
+            return np.zeros((0, 2))
+        pts_h = np.concatenate([pts, np.ones((len(pts), 1))], axis=1)  # (N,3)
+        T = np.vstack([M, [0.0, 0.0, 1.0]])
+        tr = (T @ pts_h.T).T[:, :2]
+        return tr
+
+    # Prepare images (normalized for display)
+    imgL = frames[ref_idx]
+    imgR = frames[idx]
+    h, w = imgL.shape
+    bar_width = 20  # Width of white space in pixels
+    separator = np.ones((h, bar_width), dtype=imgL.dtype)  # white separator (value=1 for normalized images)
+    comp = np.hstack([imgL, separator, imgR])  # add white bar between
+
+    # Matched points
+    matched = matches[idx]
+    if matched is None:
+        print(f"No matches for image {idx}")
+        return
+    src_pts = matched.get('matched_src')
+    dst_pts = matched.get('matched_dst')
+    inliers = matched.get('inliers')
+    M = transforms[idx]
+
+    if src_pts is None or dst_pts is None or len(src_pts) == 0:
+        print(f"No matched star pairs for image {idx}")
+        return
+
+    src_tr = transform_points(M, src_pts) if M is not None else np.zeros_like(src_pts)
+    # Adjust x-coordinates for right image to account for the separator bar as well
+    src_shifted = src_pts.copy()
+    src_shifted[:, 0] += w + bar_width
+
+    cmap_in = 'lime'
+    cmap_out = 'red'
+    color_list = [cmap_in if (inliers is not None and inliers[i]) else cmap_out for i in range(len(src_pts))]
+
+    res_vecs = dst_pts - src_tr
+    res_norms = np.linalg.norm(res_vecs, axis=1)
+
+    if composite:
+        fig = plt.figure(figsize=(14, 6))
+        ax_comp = fig.add_subplot(1, 1, 1)
+        ax_comp.imshow(comp, cmap='gray', vmin=0, vmax=1)
+        ax_comp.scatter(dst_pts[:, 0], dst_pts[:, 1], s=20, facecolors='none', edgecolors='yellow', label='ref stars')
+        ax_comp.scatter(src_shifted[:, 0], src_shifted[:, 1], marker='+', color='cyan', s=20, label='other stars')
+        for i in range(len(src_pts)):
+            ax_comp.plot(
+                [dst_pts[i, 0], src_shifted[i, 0]], [dst_pts[i, 1], src_shifted[i, 1]],
+                color=color_list[i], linewidth=0.5, alpha=0.25
+            )
+        ax_comp.set_title(f'Composite: ref (left) vs img {idx} (right) - green=inlier, red=outlier')
+        ax_comp.axis('off')
+        ax_comp.legend(loc='upper right')
+    else:
+        fig = plt.figure(figsize=(8, 6))
+        ax_over = fig.add_subplot(1, 1, 1)
+        ax_over.imshow(imgL, cmap='gray', vmin=0, vmax=1)
+        ax_over.scatter(dst_pts[:, 0], dst_pts[:, 1], s=40, edgecolors='yellow', facecolors='none', label='ref stars')
+        if len(src_tr) > 0:
+            ax_over.scatter(src_tr[:, 0], src_tr[:, 1], marker='+', color='cyan', s=40, label='src->ref (transformed)')
+        for i in range(len(src_tr)):
+            col = cmap_in if (inliers is not None and inliers[i]) else cmap_out
+            ax_over.arrow(src_tr[i, 0], src_tr[i, 1], res_vecs[i, 0], res_vecs[i, 1],
+                          color=col, head_width=1.5, length_includes_head=True, alpha=0.8)
+        ax_over.set_title(
+            f'Overlay: transformed source (cyan) -> ref (yellow). Mean residual: {res_norms.mean():.3f}px')
+        ax_over.axis('off')
+
+        ax_hist = fig.add_axes([0.66, 0.08, 0.22, 0.18])
+        ax_hist.hist(res_norms, bins=20, color='dodgerblue', alpha=0.8)
+        ax_hist.set_xlabel('res (px)')
+        ax_hist.set_ylabel('count')
+        ax_hist.set_title('Residual lengths')
+
+        plt.tight_layout()
+    plt.show()
