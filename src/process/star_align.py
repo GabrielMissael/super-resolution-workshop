@@ -195,10 +195,10 @@ def visualize_matches(ax,
     ax.imshow(img_ref, cmap='gray')
     # plot ref pts
     if ref_pts is not None and len(ref_pts) > 0:
-        ax.scatter(ref_pts[:, 0], ref_pts[:, 1], s=20, edgecolor='black', facecolor=point_color, alpha=0.8)
+        ax.scatter(ref_pts[:, 0], ref_pts[:, 1], s=30, edgecolor='black', facecolor=point_color, alpha=0.8, label="ref stars")
     # plot transformed other pts
     if transformed is not None and len(transformed) > 0:
-        ax.scatter(transformed[:, 0], transformed[:, 1], s=30, marker='+', color='cyan', alpha=0.8)
+        ax.scatter(transformed[:, 0], transformed[:, 1], s=20, marker='+', color='cyan', alpha=0.8, label="other stars")
 
     # if matches provided, draw lines for inliers
     if matched_src is not None and matched_dst is not None:
@@ -291,7 +291,7 @@ def visualize_image_positions(transforms: List[Optional[np.ndarray]],
 
     ax.set_aspect('equal')
     ax.invert_yaxis()
-    ax.legend()
+    ax.legend(loc='upper right')
     ax.set_title('Image positions in reference frame (scaled)')
 
     if auto_zoom:
