@@ -23,6 +23,8 @@ import numpy as np
 import cv2
 from typing import List, Tuple, Optional, Dict
 
+from matplotlib import pyplot as plt
+
 
 def detect_stars(image: np.ndarray,
                  threshold_sigma: float = 5.0,
@@ -418,7 +420,7 @@ def warp_images_to_reference(images: List[np.ndarray],
         warped_list.append(warped)
     return warped_list
 
-def show_match_pair(frames, idx, ref_idx=0, composite=True):
+def show_match_pair(frames, matches, transforms, idx, ref_idx=0, composite=True):
     def transform_points(M, pts):
         if M is None or len(pts) == 0:
             return np.zeros((0, 2))
