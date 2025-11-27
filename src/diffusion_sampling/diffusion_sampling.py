@@ -104,6 +104,8 @@ def show_grid(
         Number of images to display (from the start of the batch).
     """
     n_show = min(n_show, images.shape[0])
+    
+    # Optimization: Reduced figsize and removed dpi=200 for faster rendering
     fig, axes = plt.subplots(2, n_show, figsize=(2.5 * n_show, 5))
 
     for i in range(n_show):
@@ -140,6 +142,8 @@ def show_grid_final(
         Number of images from the batch to show.
     """
     n_show = min(n_show, images.shape[0])
+    
+    # Optimization: Reduced figsize and removed dpi=200 for faster rendering
     fig, axes = plt.subplots(1, n_show, figsize=(2.5 * n_show, 3))
 
     for i in range(n_show):
@@ -154,7 +158,7 @@ def show_grid_final(
             spine.set_visible(True)
             if i == selected_idx:
                 spine.set_edgecolor("green")
-                spine.set_linewidth(4) # Reduced linewidth slightly for smaller plot
+                spine.set_linewidth(4) 
             else:
                 spine.set_edgecolor("black")
                 spine.set_linewidth(1)
@@ -551,7 +555,8 @@ class LinearGaussianPosteriorSampler:
         except ImportError:
             tqdm = lambda x: x
             if progress:
-                print("tqdm is not installed; progress bar will be disabled.")
+                # Translated to French
+                print("tqdm n'est pas installé; la barre de progression sera désactivée.")
                 progress = False
 
         n = n_samples
@@ -631,6 +636,7 @@ class LinearGaussianPosteriorSampler:
         Hs = self.Hs
         H_obs, W_obs = self.obs.shape[2], self.obs.shape[3]
 
+        # Optimization: Reduced figsize and removed dpi=200 for faster animation
         fig, axes = plt.subplots(2, 5, figsize=(12, 5))
 
         # Clear previous output in the notebook
@@ -639,14 +645,14 @@ class LinearGaussianPosteriorSampler:
         for i in range(n_plot):
             img = img_to_show(x_mean[i], log_scale=False)
             axes[0, i + 1].imshow(img, cmap="magma")
-            axes[0, i + 1].set_title(f"Sample {i+1}", fontsize=8)
+            axes[0, i + 1].set_title(f"Échantillon {i+1}", fontsize=8)
             axes[0, i + 1].axis("off")
 
             mock = x_mean[i].view(1, Msrc := Hs * Hs) @ self.A.t()  # (1,Mobs)
             mock_img = mock.view(1, 1, H_obs, W_obs)
             mock_img_to_show = img_to_show(mock_img[0, 0], log_scale=False)
             axes[1, i + 1].imshow(mock_img_to_show, cmap="magma")
-            axes[1, i + 1].set_title(f"Mock Obs {i+1}", fontsize=8)
+            axes[1, i + 1].set_title(f"Obs. Simulée {i+1}", fontsize=8)
             axes[1, i + 1].axis("off")
 
         if true is not None:
@@ -655,18 +661,18 @@ class LinearGaussianPosteriorSampler:
             else:
                 true_img = img_to_show(true, log_scale=False)
             axes[0, 0].imshow(true_img, cmap="magma")
-            axes[0, 0].set_title("True", fontsize=8)
+            axes[0, 0].set_title("Vérité", fontsize=8)
         else:
 
             axes[0, 0].text(0.5, 0.5, "?", fontsize=40, ha="center", va="center")
-            axes[0, 0].set_title("True (unknown)", fontsize=8)
+            axes[0, 0].set_title("Vérité (inconnue)", fontsize=8)
         axes[0, 0].axis("off")
 
         obs_img = img_to_show(self.obs[0, 0], log_scale=False)
         axes[1, 0].imshow(obs_img, cmap="magma")
-        axes[1, 0].set_title("Observed (1st)", fontsize=8)
+        axes[1, 0].set_title("Observée", fontsize=8)
         axes[1, 0].axis("off")
 
-        fig.suptitle(f"Step {step}", fontsize=10)
+        fig.suptitle(f"Étape {step}", fontsize=10)
         plt.tight_layout()
         plt.show()
