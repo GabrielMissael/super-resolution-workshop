@@ -189,9 +189,10 @@ def launch_telescope_app(
           - return magma-colored, upscaled y_obs and store tensors/params in State.
         """
         # choose image
-        img = upload_img if src_choice == "Upload" else camera_img
+        # Note: Translated string check
+        img = upload_img if src_choice == "Importer" else camera_img
         if img is None:
-            raise gr.Error("Please upload or capture an image first.")
+            raise gr.Error("Veuillez d'abord prendre une photo ou importer une image.")
 
         # 1. grayscale + normalization to [0,1]
         img_gray = rgb_to_gray_numpy(img)              # (H, W) in [0,255]
@@ -253,7 +254,7 @@ def launch_telescope_app(
         Outputs per yield: (current_frame_img_RGB, final_sample_img_RGB_or_None)
         """
         if y_obs is None or A is None or high_res is None:
-            raise gr.Error("Please click 'Apply Noise' first.")
+            raise gr.Error("Veuillez cliquer sur 'Appliquer le bruit' d'abord.")
 
         # ensure tensors on correct device
         high_res_t = high_res.to(DEVICE)
@@ -338,28 +339,27 @@ def launch_telescope_app(
     # Gradio UI
     # ------------------------------------------------------------------
 
-    with gr.Blocks(title="Telescope Image Posterior Sampler") as demo:
+    with gr.Blocks(title="Reconstruction d'Image de Télescope") as demo:
         gr.Markdown(
-            "# Telescope Image Posterior Sampler 🔭\n"
-            "1. Choose **Camera** or **Upload** and select an image.\n"
-            "2. Adjust PSF / noise / downsampling, then click **Apply Noise** "
-            "to see the noisy observation.\n"
-            "3. Click **Run Inference (Streaming)** to see the posterior "
-            "sample evolve and the final result."
+            "# Reconstruction d'Image de Télescope 🔭\n"
+            "1. Choisissez **Caméra** ou **Importer** et sélectionnez une image.\n"
+            "2. Ajustez la PSF (flou), le bruit et la résolution, puis cliquez sur **Appliquer le bruit** "
+            "pour voir l'observation bruitée.\n"
+            "3. Cliquez sur **▶ Lancer l'inférence** pour voir l'IA reconstruire la galaxie."
         )
 
         # 1. source selection
         with gr.Row():
             src_choice = gr.Radio(
-                ["Camera", "Upload"],
-                value="Camera",
-                label="Image Source",
+                ["Caméra", "Importer"],
+                value="Caméra",
+                label="Source de l'image",
             )
 
         # 2. image input: camera vs upload (snapshot only)
         with gr.Row():
             camera_img = gr.Image(
-                label="Camera Snapshot",
+                label="Photo de la caméra",
                 sources=["webcam"],
                 type="numpy",
                 image_mode="RGB",
@@ -368,7 +368,7 @@ def launch_telescope_app(
                 visible=True,
             )
             upload_img = gr.Image(
-                label="Upload Image",
+                label="Importer une image",
                 sources=["upload"],
                 type="numpy",
                 image_mode="RGB",
@@ -378,8 +378,8 @@ def launch_telescope_app(
 
         def toggle_source(src):
             return (
-                gr.update(visible=(src == "Camera")),
-                gr.update(visible=(src == "Upload")),
+                gr.update(visible=(src == "Caméra")),
+                gr.update(visible=(src == "Importer")),
             )
 
         src_choice.change(
@@ -395,49 +395,61 @@ def launch_telescope_app(
                 maximum=2.0,
                 value=DEFAULT_SIGMA_PSF,
                 step=0.01,
-                label="PSF (blur)",
+                label="PSF (flou)",
             )
             sigma_noise_slider = gr.Slider(
                 minimum=0.05,
                 maximum=0.8,
                 value=DEFAULT_SIGMA_NOISE,
                 step=0.01,
-                label="Noise σ",
+                label="Bruit σ",
             )
             downsample_slider = gr.Slider(
                 minimum=24,
                 maximum=64,
                 value=DEFAULT_S,
                 step=1,
-                label="Downsample size",
+                label="Résolution (pixels)",
             )
 
         # 4. buttons
         with gr.Row():
-            apply_btn = gr.Button("Apply Noise", variant="secondary")
-            run_btn = gr.Button("▶ Run Inference (Streaming)", variant="primary")
+            apply_btn = gr.Button("Appliquer le bruit", variant="secondary")
+            run_btn = gr.Button("▶ Lancer l'inférence", variant="primary")
 
         # 5. outputs
         with gr.Row():
             obs_out = gr.Image(
-                label="Noisy Observation",
+                label="Observation bruitée",
                 image_mode="RGB",
                 height=320,
             )
 
         with gr.Row():
             traj_out = gr.Image(
-                label="Current image",
+                label="Image actuelle",
                 image_mode="RGB",
                 height=320,
             )
             recon_out = gr.Image(
-                label="Final result",
+                label="Résultat final",
                 image_mode="RGB",
                 height=320,
             )
 
-        # 6. hidden state objects
+        # 6. Instructions for saving and uploading
+        gr.Markdown(
+            """
+            ---
+            ## 📝 Sauvegarder et Soumettre
+            1. Une fois satisfait de votre 'galaxie', faites un **clic droit** sur l'image du **Résultat final** et choisissez **Enregistrer l'image sous...**
+            2. Téléversez votre image sur le formulaire Google suivant avec votre nom :
+            
+            👉 [**Cliquez ici pour soumettre votre galaxie**](https://forms.gle/Lf2eLSfkpnj4rCtQ6)
+            """
+        )
+
+        # 7. hidden state objects
         high_res_state = gr.State()
         A_state = gr.State()
         y_obs_state = gr.State()
