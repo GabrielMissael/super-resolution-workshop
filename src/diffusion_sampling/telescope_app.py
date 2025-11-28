@@ -437,15 +437,14 @@ def launch_telescope_app(
                 height=320,
             )
 
-        # 6. Instructions for saving and uploading
         gr.Markdown(
             """
             ---
-            ## 📝 Sauvegarder et Soumettre
+            # 📝 Sauvegarder et Soumettre
             1. Une fois satisfait de votre 'galaxie', faites un **clic droit** sur l'image du **Résultat final** et choisissez **Enregistrer l'image sous...**
-            2. Téléversez votre image sur le formulaire Google suivant avec votre nom :
-            
-            👉 [**Cliquez ici pour soumettre votre galaxie**](https://forms.gle/Lf2eLSfkpnj4rCtQ6)
+            2. Rendez-vous sur le lien suivant: [**Padlet de soumission**](https://padlet.com/missaelgabo/submission-request/qPBkXlaal12dveOl?section=338293155)
+            3. Cliquez sur le bouton **+**, écrivez votre **nom** comme titre et **téléchargez** votre image.
+            4. **N'oubliez pas** de noter le mot de passe qui sera affiché sur l'écran en classe pour pouvoir voter!
             """
         )
 
